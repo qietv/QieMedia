@@ -22,7 +22,7 @@ struct DemoRedPlayerPage {
       Column() {
         XComponent({
           id: this.xComponentController.getSurfaceId(),
-          type: this.xComponentController.getSurfaceType(),
+          type: XComponentType.SURFACE,
           libraryname: this.xComponentController.getLibraryName(),
           controller: this.xComponentController
         })
