@@ -12,6 +12,12 @@ set(EXTRA_DIR "${ROOT_DIR}/../extra")
 set(REDBASE_DIR "${ROOT_DIR}/../redbase")
 set(JSON_DIR "${EXTRA_DIR}/nlohmann-json")
 
+if(OHOS_ARCH STREQUAL arm64-v8a)
+  set(QIEMEDIA_DEPENDENCIES_HOME "${ROOT_DIR}/../../../../Dependencies/arm64-ohos")
+elseif(OHOS_ARCH STREQUAL x86_64)
+  set(QIEMEDIA_DEPENDENCIES_HOME "${ROOT_DIR}/../../../../Dependencies/x64-ohos")
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
   set(TARGET_PLATFORM android)
   set(CURL_DIR ${EXTRA_DIR}/curl/${TARGET_PLATFORM}/${ANDROID_ABI})
@@ -20,11 +26,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "OHOS")
   add_definitions(-D__HARMONY__)
   set(TARGET_PLATFORM harmony)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument"
-  )
-  set(CURL_DIR ${EXTRA_DIR}/curl/${TARGET_PLATFORM}/${OHOS_ARCH})
-  set(CARES_DIR ${EXTRA_DIR}/cares/${TARGET_PLATFORM}/${OHOS_ARCH})
-  set(OPENSSL_DIR ${EXTRA_DIR}/openssl/${TARGET_PLATFORM}/${OHOS_ARCH})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
 else()
   message(
     FATAL_ERROR "This CMake script does not support ${CMAKE_SYSTEM_NAME}!"
@@ -32,9 +34,7 @@ else()
 endif()
 
 include_directories(
-  ${CURL_DIR}/include
-  ${CARES_DIR}/include
-  ${OPENSSL_DIR}/include
+  ${QIEMEDIA_DEPENDENCIES_HOME}/include
   ${REDBASE_DIR}/include
   ${JSON_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -54,19 +54,23 @@ list(
 
 add_library(curl STATIC IMPORTED)
 set_target_properties(
-  curl PROPERTIES IMPORTED_LOCATION ${CURL_DIR}/lib/libcurl.a
+  curl PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libcurl.a
 )
 add_library(cares STATIC IMPORTED)
 set_target_properties(
-  cares PROPERTIES IMPORTED_LOCATION ${CARES_DIR}/lib/libcares.a
+  cares PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libcares.a
 )
 add_library(crypto STATIC IMPORTED)
 set_target_properties(
-  crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_DIR}/lib/libcrypto.a
+  crypto PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libcrypto.a
 )
 add_library(ssl STATIC IMPORTED)
 set_target_properties(
-  ssl PROPERTIES IMPORTED_LOCATION ${OPENSSL_DIR}/lib/libssl.a
+  ssl PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libssl.a
+)
+add_library(z STATIC IMPORTED)
+set_target_properties(
+  z PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libz.a
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
