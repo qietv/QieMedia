@@ -1,0 +1,8 @@
+﻿.hvigor
+.idea
+**/.cxx
+**/build
+**/libs/arm64-v8a
+**/libs/x86_64
+**/oh_modules
+**/oh-package-lock.json5
