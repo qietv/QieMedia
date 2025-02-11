@@ -8,7 +8,8 @@
       "path": "../../redplayercore/CMakeLists.txt",
       "arguments": "-DOHOS_STL=c++_shared",
       "abiFilters": [
-        "arm64-v8a"
+        "arm64-v8a",
+        "x86_64"
       ],
       "cppFlags": ""
     },
