@@ -132,6 +132,19 @@ static void context_to_optwrapper(Context *c, DownLoadOptWrapper *opt) {
   opt->use_https = c->use_https;
 }
 
+static uintptr_t av_dict_strtoptr(char * value) {
+   uintptr_t ptr = 0;
+   char *next = NULL;
+   if(!value || value[0] !='0' || (value[1]|0x20)!='x') {
+       return 0;
+   }
+   ptr = strtoull(value, &next, 16);
+   if (next == value) {
+       return 0;
+   }
+   return ptr;
+}
+
 static int reddownload_adapter_open(URLContext *h, const char *arg, int flags,
                                     AVDictionary **options) {
   Context *c = h->priv_data;

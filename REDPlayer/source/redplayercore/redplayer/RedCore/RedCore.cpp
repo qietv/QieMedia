@@ -495,8 +495,8 @@ RED_ERR CRedCore::PerformFormatConfig() {
     av_dict_set(&mGeneralConfig->formatConfig, "timeout", NULL, 0);
   }
 
-  av_dict_set_intptr(&mGeneralConfig->formatConfig, "redapplication",
-                     (uintptr_t)mAppCtx, 0);
+  av_dict_set_int(&mGeneralConfig->formatConfig, "redapplication",
+                     (int64_t)mAppCtx, 0);
 
   return OK;
 }

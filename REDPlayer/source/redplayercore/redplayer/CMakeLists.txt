@@ -15,6 +15,18 @@ set(REDDOWNLOAD_DIR "${ROOT_DIR}/../reddownload")
 set(REDSTRATEGYCENTER_DIR "${ROOT_DIR}/../redstrategycenter")
 set(REDPLAYERCORE_DIR "${ROOT_DIR}/../")
 
+if (OHOS_ARCH STREQUAL arm64-v8a)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/arm64-ohos"
+    )
+elseif (OHOS_ARCH STREQUAL x86_64)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/x64-ohos"
+    )
+endif ()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
   set(TARGET_PLATFORM android)
   set(CMAKE_SYSTEM_VERSION 21)
@@ -36,7 +48,7 @@ else()
 endif()
 
 include_directories(
-  "${EXTRA_FFMPEG_DIR}/include"
+  "${QIEMEDIA_DEPENDENCIES_HOME}/include"
   "${REDBASE_DIR}/include"
   "${REDDOWNLOAD_DIR}/"
   "${REDSOURCE_DIR}"
@@ -44,8 +56,6 @@ include_directories(
   "${REDPLAYERCORE_DIR}"
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
-
-link_directories("${EXTRA_FFMPEG_DIR}")
 
 set(SRC_LIST
     base/RedBuffer.cpp
@@ -139,7 +149,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "OHOS")
     ${GLES-lib}
     ${libace-lib}
     redbase
-    ffmpeg
+    FFmpegUniversal
     reddecoder
     redrender
     reddownload
@@ -166,12 +176,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
             ${LIBRARY_OUTPUT_DIRECTORY}
   )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "OHOS")
-  add_custom_command(
-    TARGET redplayer
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${EXTRA_FFMPEG_DIR}/libffmpeg.so
-            ${LIBRARY_OUTPUT_DIRECTORY}
-  )
+  # Do nothing
 else()
   message(
     FATAL_ERROR "This CMake script does not support ${CMAKE_SYSTEM_NAME}!"

@@ -12,11 +12,17 @@ set(EXTRA_DIR "${ROOT_DIR}/../extra")
 set(REDBASE_DIR "${ROOT_DIR}/../redbase")
 set(JSON_DIR "${EXTRA_DIR}/nlohmann-json")
 
-if(OHOS_ARCH STREQUAL arm64-v8a)
-  set(QIEMEDIA_DEPENDENCIES_HOME "${ROOT_DIR}/../../../../Dependencies/arm64-ohos")
-elseif(OHOS_ARCH STREQUAL x86_64)
-  set(QIEMEDIA_DEPENDENCIES_HOME "${ROOT_DIR}/../../../../Dependencies/x64-ohos")
-endif()
+if (OHOS_ARCH STREQUAL arm64-v8a)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/arm64-ohos"
+    )
+elseif (OHOS_ARCH STREQUAL x86_64)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/x64-ohos"
+    )
+endif ()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
   set(TARGET_PLATFORM android)

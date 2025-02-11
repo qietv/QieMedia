@@ -28,5 +28,5 @@ void redav_register_all() {
 #endif
 
   /* protocols */
-  RED_REGISTER_PROTOCOL(reddownload_adapter);
+  //RED_REGISTER_PROTOCOL(reddownload_adapter);
 }

@@ -11,6 +11,18 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(EXTRA_DIR "${ROOT_DIR}/../extra")
 set(REDBASE_DIR "${ROOT_DIR}/../redbase")
 
+if (OHOS_ARCH STREQUAL arm64-v8a)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/arm64-ohos"
+    )
+elseif (OHOS_ARCH STREQUAL x86_64)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/x64-ohos"
+    )
+endif ()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
   set(TARGET_PLATFORM android)
   set(CMAKE_SYSTEM_VERSION 21)
@@ -33,10 +45,10 @@ endif()
 set(EXTRA_REDBASE_DIR "${REDBASE_DIR}")
 
 include_directories(
-  "${EXTRA_FFMPEG_DIR}/include" "${EXTRA_REDBASE_DIR}/include"
+  "${QIEMEDIA_DEPENDENCIES_HOME}/include"
+  "${EXTRA_REDBASE_DIR}/include"
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
-link_directories("${EXTRA_FFMPEG_DIR}")
 
 set(SRC_LIST
     RedFFExtractor.cc
@@ -60,7 +72,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "OHOS")
   target_link_libraries(
     redsource
     ${log-lib}
-    ffmpeg
+    FFmpegUniversal
     redbase
   )
 else()

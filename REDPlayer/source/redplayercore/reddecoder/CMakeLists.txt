@@ -12,6 +12,18 @@ set(EXTRA_DIR "${ROOT_DIR}/../extra")
 set(REDBASE_DIR "${ROOT_DIR}/../redbase")
 set(EXTRA_REDBASE_DIR "${REDBASE_DIR}")
 
+if (OHOS_ARCH STREQUAL arm64-v8a)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/arm64-ohos"
+    )
+elseif (OHOS_ARCH STREQUAL x86_64)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/x64-ohos"
+    )
+endif ()
+
 set(SRC_LIST
     common/buffer.cpp
     video/video_codec_info.cpp
@@ -52,11 +64,10 @@ else()
 endif()
 
 include_directories(
-  "${EXTRA_FFMPEG_DIR}/include" "${EXTRA_REDBASE_DIR}/include"
+  "${QIEMEDIA_DEPENDENCIES_HOME}/include"
+  "${EXTRA_REDBASE_DIR}/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
-
-link_directories("${EXTRA_FFMPEG_DIR}")
 
 add_library(reddecoder SHARED ${SRC_LIST})
 
@@ -71,7 +82,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "OHOS")
   target_link_libraries(
     reddecoder
-    ffmpeg
+    FFmpegUniversal
     redbase
     native_media_vdec
     native_media_core
