@@ -79,6 +79,7 @@ add_library(
 target_link_libraries(
     FFmpegUniversal
     PRIVATE
+    OpenSSLUniversal
     -Wl,-Bsymbolic
     -Wl,--whole-archive
     avcodec
