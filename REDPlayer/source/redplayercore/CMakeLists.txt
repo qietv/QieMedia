@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10.2)
 project(redplayercore)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "OHOS")
+    add_subdirectory(../../../Sources/OpenSSLUniversal OpenSSLUniversal)
     add_subdirectory(../../../Sources/FFmpegUniversal FFmpegUniversal)
 endif ()
 add_subdirectory(redbase)

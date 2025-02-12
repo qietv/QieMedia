@@ -66,14 +66,6 @@ add_library(cares STATIC IMPORTED)
 set_target_properties(
   cares PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libcares.a
 )
-add_library(crypto STATIC IMPORTED)
-set_target_properties(
-  crypto PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libcrypto.a
-)
-add_library(ssl STATIC IMPORTED)
-set_target_properties(
-  ssl PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libssl.a
-)
 add_library(z STATIC IMPORTED)
 set_target_properties(
   z PROPERTIES IMPORTED_LOCATION ${QIEMEDIA_DEPENDENCIES_HOME}/lib/libz.a
@@ -93,7 +85,6 @@ target_link_libraries(
   z
   curl
   cares
-  ssl
-  crypto
+  OpenSSLUniversal
   redbase
 )
