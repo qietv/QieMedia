@@ -47,7 +47,8 @@ AudioCodecError FFmpegAudioDecoder::init(AudioCodecConfig &config) {
   }
 
   codec_context_->sample_rate = config.sample_rate;
-  codec_context_->channels = config.channels;
+  codec_context_->ch_layout.order = AV_CHANNEL_ORDER_UNSPEC;
+  codec_context_->ch_layout.nb_channels = config.channels;
 
   if (config.extradata_size > 0) {
     codec_context_->extradata = reinterpret_cast<uint8_t *>(
@@ -56,7 +57,7 @@ AudioCodecError FFmpegAudioDecoder::init(AudioCodecConfig &config) {
     memcpy(codec_context_->extradata, config.extradata, config.extradata_size);
   }
 
-  AVCodec *codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec *codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec) {
     release();
     return AudioCodecError::kInitError;
@@ -121,7 +122,7 @@ AudioCodecError FFmpegAudioDecoder::decode(const Buffer *buffer) {
 
   AudioFrameMeta *meta = output_buffer->get_audio_frame_meta();
 
-  for (int i = 0; i < frame->channels; i++) {
+  for (int i = 0; i < frame->ch_layout.nb_channels; i++) {
     meta->channel[i] = frame->data[i];
   }
 
@@ -129,11 +130,10 @@ AudioCodecError FFmpegAudioDecoder::decode(const Buffer *buffer) {
       .av_frame = frame,
       .release_av_frame = release_av_frame,
   });
-  meta->num_channels = frame->channels;
   meta->sample_rate = frame->sample_rate;
   meta->num_samples = frame->nb_samples;
   meta->sample_format = frame->format;
-  meta->channel_layout = frame->channel_layout;
+  meta->channel_layout = frame->ch_layout;
   meta->pts_ms = frame->best_effort_timestamp;
 
   audio_decoded_callback_->on_decoded_frame(std::move(output_buffer));

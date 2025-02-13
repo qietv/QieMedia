@@ -103,9 +103,8 @@ reddecoder::AudioCodecError CAudioProcesser::on_decoded_frame(
   buffer->data = decoded_frame->get_away_data();
   buffer->datasize = decoded_frame->get_size();
   buffer->pts = meta->pts_ms;
-  buffer->num_channels = meta->num_channels;
   buffer->nb_samples = meta->num_samples;
-  for (int i = 0; i < meta->num_channels; i++) {
+  for (int i = 0; i < meta->channel_layout.nb_channels; i++) {
     buffer->channel[i] = meta->channel[i];
   }
   buffer->channel_layout = meta->channel_layout;
@@ -224,7 +223,7 @@ RED_ERR CAudioProcesser::ResetDecoderFormat() {
     return ME_ERROR;
   auto track_info = mMetaData->track_info[mMetaData->audio_index];
   reddecoder::AudioCodecConfig config;
-  config.channels = track_info.channels;
+  config.channels = track_info.channel_layout.nb_channels;
   config.sample_rate = track_info.sample_rate;
   config.extradata = track_info.extra_data;
   config.extradata_size = track_info.extra_data_size;

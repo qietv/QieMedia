@@ -1196,8 +1196,7 @@ void CRedCore::dumpFormatInfo() {
     if (mMetaData->audio_index >= 0) {
       TrackInfo audio_track = mMetaData->track_info[mMetaData->audio_index];
       char buf[256] = {0};
-      av_get_channel_layout_string(buf, sizeof(buf), audio_track.channels,
-                                   audio_track.channel_layout);
+      av_channel_layout_describe(&audio_track.channel_layout, buf, sizeof(buf));
       AV_LOGI_ID(TAG, mID, "Audio: %s, %d Hz, %s, %s, %d kb/s\n",
                  avcodec_get_name(static_cast<AVCodecID>(audio_track.codec_id)),
                  audio_track.sample_rate, buf,

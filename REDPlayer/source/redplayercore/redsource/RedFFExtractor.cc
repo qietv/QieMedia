@@ -138,8 +138,7 @@ int RedFFExtractor::open(const std::string &url, FFMpegOpt &opt,
       info.sar_den = st->codecpar->sample_aspect_ratio.den;
       info.sample_rate = st->codecpar->sample_rate;
       info.sample_fmt = st->codecpar->format;
-      info.channel_layout = st->codecpar->channel_layout;
-      info.channels = st->codecpar->channels;
+      info.channel_layout = st->codecpar->ch_layout;
       info.extra_data_size = st->codecpar->extradata_size;
       info.color_primaries = st->codecpar->color_primaries;
       info.color_trc = st->codecpar->color_trc;
@@ -151,11 +150,20 @@ int RedFFExtractor::open(const std::string &url, FFMpegOpt &opt,
                st->codecpar->extradata_size);
       }
     }
-    if (st->codec) {
-      info.skip_loop_filter = st->codec->skip_loop_filter;
-      info.skip_idct = st->codec->skip_idct;
-      info.skip_frame = st->codec->skip_frame;
-      info.pixel_format = st->codec->pix_fmt;
+    AVCodecContext *codec_ctx = avcodec_alloc_context3(NULL);
+    if (codec_ctx)
+    {
+      if (avcodec_parameters_to_context(codec_ctx, st->codecpar) >= 0) 
+      {
+        if (codec_ctx)
+        {
+          info.skip_loop_filter = codec_ctx->skip_loop_filter;
+          info.skip_idct = codec_ctx->skip_idct;
+          info.skip_frame = codec_ctx->skip_frame;
+          info.pixel_format = codec_ctx->pix_fmt;
+        }
+      }      
+      avcodec_free_context(&codec_ctx);
     }
     // st->discard = AVDISCARD_ALL;
     metadata->track_info.emplace_back(info);

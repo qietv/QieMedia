@@ -12,6 +12,18 @@ set(EXTRA_DIR "${ROOT_DIR}/../extra")
 set(REDBASE_DIR "${ROOT_DIR}/../redbase")
 set(EXTRA_REDBASE_DIR "${REDBASE_DIR}")
 
+if (OHOS_ARCH STREQUAL arm64-v8a)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/arm64-ohos"
+    )
+elseif (OHOS_ARCH STREQUAL x86_64)
+    set(
+        QIEMEDIA_DEPENDENCIES_HOME
+        "${ROOT_DIR}/../../../../Dependencies/x64-ohos"
+    )
+endif ()
+
 set(SRC_LIST
     video/video_renderer_factory.cpp
     video/video_filter.cpp
@@ -59,7 +71,9 @@ else()
 endif()
 
 include_directories(
-  "${EXTRA_REDBASE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/.."
+  "${QIEMEDIA_DEPENDENCIES_HOME}/include"
+  "${EXTRA_REDBASE_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
 
 add_library(redrender SHARED ${SRC_LIST})

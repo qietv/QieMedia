@@ -76,8 +76,8 @@ void HarmonyAudioRender::AdjustAudioInfo(const AudioInfo &desired,
   if (desired.sample_rate < 4000 || desired.sample_rate > 48000) {
     obtained.sample_rate = 44100;
   }
-  if (desired.channels > 2) {
-    obtained.channels = 2;
+  if (desired.channel_layout.nb_channels > 2) {
+    obtained.channel_layout.nb_channels = 2;
   }
   if (obtained.format != AudioFormat::kAudioS16Sys) {
     obtained.format = AudioFormat::kAudioS16Sys;
@@ -119,7 +119,7 @@ int HarmonyAudioRender::OpenAudio(
   }
 
   audio_stream_result =
-      OH_AudioStreamBuilder_SetChannelCount(stream_build, obtained.channels);
+      OH_AudioStreamBuilder_SetChannelCount(stream_build, obtained.channel_layout.nb_channels);
   if (audio_stream_result != OH_AudioStream_Result::AUDIOSTREAM_SUCCESS) {
     AV_LOGE_ID(
         AUDIO_LOG_TAG, session_id_,

@@ -5,11 +5,12 @@
 #include "../redrender_macro_definition.h"
 #include "./audio_common.h"
 
+#include <libavutil/channel_layout.h>
+
 NS_REDRENDER_AUDIO_BEGIN
 struct AudioInfo {
-  int channels;
   int sample_rate;
-  uint64_t channel_layout;
+  AVChannelLayout channel_layout{};
   // for audioqueue
   uint8_t silence;
   uint16_t samples;
@@ -17,7 +18,6 @@ struct AudioInfo {
   AudioFormat format;
   AudioInfo &operator=(const AudioInfo &info) {
     this->sample_rate = info.sample_rate;
-    this->channels = info.channels;
     this->format = info.format;
     this->channel_layout = info.channel_layout;
     this->silence = info.silence;

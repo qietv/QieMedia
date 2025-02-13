@@ -117,17 +117,11 @@ RED_ERR CRedRenderAudioHal::Init() {
        iter != mMetaData->track_info.end(); ++iter) {
     if (iter->stream_type == TYPE_AUDIO && iter->stream_index == streamindex) {
       mBytesPerSec =
-          av_samples_get_buffer_size(NULL, iter->channels, iter->sample_rate,
+          av_samples_get_buffer_size(NULL, iter->channel_layout.nb_channels, iter->sample_rate,
                                      AVSampleFormat(iter->sample_fmt), 1);
       // set audio properties
-      mDesired.channels = iter->channels;
       mDesired.sample_rate = iter->sample_rate;
-      mDesired.channel_layout =
-          (iter->channel_layout &&
-           iter->channels ==
-               av_get_channel_layout_nb_channels(iter->channel_layout))
-              ? iter->channel_layout
-              : av_get_default_channel_layout(iter->channels);
+      mDesired.channel_layout = iter->channel_layout;
       mDesired.silence = 0;
       mDesired.format =
           FfmegAudioFmtToRedRenderAudioFmt((AVSampleFormat)iter->sample_fmt);
@@ -138,8 +132,8 @@ RED_ERR CRedRenderAudioHal::Init() {
       AV_LOGI_ID(TAG, mID,
                  "redrender OpenAudio wanted channels:%d, sample_rate:%d, "
                  "channel_layout:%" PRIu64 ", format:%d mBytesPerSec %d\n",
-                 mDesired.channels, mDesired.sample_rate,
-                 mDesired.channel_layout, mDesired.format, mBytesPerSec);
+                 mDesired.channel_layout.nb_channels, mDesired.sample_rate,
+                 mDesired.channel_layout.u.mask, mDesired.format, mBytesPerSec);
       break;
     }
   }
@@ -154,17 +148,16 @@ RED_ERR CRedRenderAudioHal::Init() {
     return ME_ERROR;
   }
 
-  if (mObtained.channels != mDesired.channels) {
-    mObtained.channel_layout =
-        av_get_default_channel_layout(mObtained.channels);
-    if (!mObtained.channel_layout) {
+  if (mObtained.channel_layout.nb_channels != mDesired.channel_layout.nb_channels) {
+    av_channel_layout_default(&mObtained.channel_layout, mObtained.channel_layout.nb_channels);
+    if (!mObtained.channel_layout.nb_channels) {
       AV_LOGE_ID(TAG, mID, "channel count %d is not support",
-                 mObtained.channels);
+                 mObtained.channel_layout.nb_channels);
       return ME_ERROR;
     }
   }
   mBytesPerSec = av_samples_get_buffer_size(
-      NULL, mObtained.channels, mObtained.sample_rate,
+      NULL, mObtained.channel_layout.nb_channels, mObtained.sample_rate,
       RedRenderAudioFmtToFfmegAudioFmt(mObtained.format), 1);
   mAudioRender->SetDefaultLatencySeconds(
       (static_cast<double>(2 * mObtained.size)) / mBytesPerSec);
@@ -175,7 +168,7 @@ RED_ERR CRedRenderAudioHal::Init() {
       TAG, mID,
       "redrender OpenAudio obtained channels:%d, sample_rate:%d, "
       "channel_layout:%" PRIu64 ", format:%d mAudioDelay %f, mBytesPerSec %d\n",
-      mObtained.channels, mObtained.sample_rate, mObtained.channel_layout,
+      mObtained.channel_layout.nb_channels, mObtained.sample_rate, mObtained.channel_layout.u.mask,
       mObtained.format, mAudioDelay, mBytesPerSec);
   return OK;
 }
@@ -184,44 +177,42 @@ int CRedRenderAudioHal::ResampleAudioData(
     std::unique_ptr<CGlobalBuffer> &buffer) {
   int data_size = 0;
   int resampled_data_size = 0;
-  int64_t dec_channel_layout;
   int wanted_nb_samples;
   if (!buffer->channel[0]) {
     AV_LOGE_ID(TAG, mID, "Invalid audio data\n");
     return ME_RETRY;
   }
   data_size =
-      av_samples_get_buffer_size(NULL, buffer->num_channels, buffer->nb_samples,
+      av_samples_get_buffer_size(NULL, buffer->channel_layout.nb_channels, buffer->nb_samples,
                                  AVSampleFormat(buffer->format), 1);
-  dec_channel_layout =
-      (buffer->channel_layout &&
-       buffer->num_channels ==
-           av_get_channel_layout_nb_channels(buffer->channel_layout))
-          ? buffer->channel_layout
-          : av_get_default_channel_layout(buffer->num_channels);
   wanted_nb_samples = buffer->nb_samples;
   if (FfmegAudioFmtToRedRenderAudioFmt((AVSampleFormat)buffer->format) !=
           mCurrentInfo.format ||
-      dec_channel_layout != mCurrentInfo.channel_layout ||
+      0 == av_channel_layout_compare(&buffer->channel_layout, &mCurrentInfo.channel_layout) ||
       buffer->sample_rate != mCurrentInfo.sample_rate ||
       (wanted_nb_samples != buffer->nb_samples && !mSwrContext)) {
     AVDictionary *swr_opts = NULL;
     swr_free(&mSwrContext);
-    mSwrContext = swr_alloc_set_opts(
-        NULL, mObtained.channel_layout,
+    mSwrContext = nullptr;
+    if (0 != swr_alloc_set_opts2(
+        &mSwrContext,
+        &mObtained.channel_layout,
         RedRenderAudioFmtToFfmegAudioFmt(mObtained.format),
-        mObtained.sample_rate, dec_channel_layout,
-        (enum AVSampleFormat)buffer->format, buffer->sample_rate, 0, NULL);
-    if (!mSwrContext) {
+        mObtained.sample_rate,
+        &buffer->channel_layout,
+        (enum AVSampleFormat)buffer->format,
+        buffer->sample_rate,
+        0,
+        NULL)) {
       AV_LOGE_ID(TAG, mID,
                  "Cannot create sample rate converter for conversion of %d Hz "
                  "%s %d channels to %d Hz %s %d channels!\n",
                  buffer->sample_rate,
                  av_get_sample_fmt_name((enum AVSampleFormat)buffer->format),
-                 buffer->num_channels, mObtained.sample_rate,
+                 buffer->channel_layout.nb_channels, mObtained.sample_rate,
                  av_get_sample_fmt_name(
                      RedRenderAudioFmtToFfmegAudioFmt(mObtained.format)),
-                 mObtained.channels);
+                 mObtained.channel_layout.nb_channels);
       return ME_ERROR;
     }
 
@@ -234,10 +225,10 @@ int CRedRenderAudioHal::ResampleAudioData(
                  "%s %d channels to %d Hz %s %d channels!\n",
                  buffer->sample_rate,
                  av_get_sample_fmt_name((enum AVSampleFormat)buffer->format),
-                 buffer->num_channels, mObtained.sample_rate,
+                 buffer->channel_layout.nb_channels, mObtained.sample_rate,
                  av_get_sample_fmt_name(
                      RedRenderAudioFmtToFfmegAudioFmt(mObtained.format)),
-                 mObtained.channels);
+                 mObtained.channel_layout.nb_channels);
       swr_free(&mSwrContext);
       return ME_ERROR;
     }
@@ -247,13 +238,12 @@ int CRedRenderAudioHal::ResampleAudioData(
                "Hz %s %d channels to %d Hz %s %d channels!\n",
                mSwrContext, buffer->sample_rate,
                av_get_sample_fmt_name((enum AVSampleFormat)buffer->format),
-               buffer->num_channels, mObtained.sample_rate,
+               buffer->channel_layout.nb_channels, mObtained.sample_rate,
                av_get_sample_fmt_name(
                    RedRenderAudioFmtToFfmegAudioFmt(mObtained.format)),
-               mObtained.channels);
+               mObtained.channel_layout.nb_channels);
 
-    mCurrentInfo.channel_layout = dec_channel_layout;
-    mCurrentInfo.channels = buffer->num_channels;
+    mCurrentInfo.channel_layout = buffer->channel_layout;
     mCurrentInfo.sample_rate = buffer->sample_rate;
     mCurrentInfo.format =
         FfmegAudioFmtToRedRenderAudioFmt((AVSampleFormat)buffer->format);
@@ -266,7 +256,7 @@ int CRedRenderAudioHal::ResampleAudioData(
                              mObtained.sample_rate / buffer->sample_rate +
                          256);
     int out_size = av_samples_get_buffer_size(
-        NULL, mObtained.channels, out_count,
+        NULL, mObtained.channel_layout.nb_channels, out_count,
         RedRenderAudioFmtToFfmegAudioFmt(mObtained.format), 0);
     int len2;
     if (out_size < 0) {
@@ -303,9 +293,9 @@ int CRedRenderAudioHal::ResampleAudioData(
     mAudioBuf = mAudioBuf1;
     int bytes_per_sample = av_get_bytes_per_sample(
         RedRenderAudioFmtToFfmegAudioFmt(mObtained.format));
-    resampled_data_size = len2 * mObtained.channels * bytes_per_sample;
+    resampled_data_size = len2 * mObtained.channel_layout.nb_channels * bytes_per_sample;
     mBytesPerSec =
-        buffer->sample_rate * buffer->num_channels * bytes_per_sample;
+        buffer->sample_rate * buffer->channel_layout.nb_channels * bytes_per_sample;
   } else {
     mAudioBuf = buffer->channel[0];
     mAudioBuf1 = mAudioBuf;
@@ -370,7 +360,7 @@ void CRedRenderAudioHal::GetAudioData(char *data, int &len) {
                                  mObtained.sample_rate / buffer->sample_rate +
                              256);
         int out_size = av_samples_get_buffer_size(
-            nullptr, mObtained.channels, out_count,
+            nullptr, mObtained.channel_layout.nb_channels, out_count,
             RedRenderAudioFmtToFfmegAudioFmt(mObtained.format), 0);
         int bytes_per_sample = av_get_bytes_per_sample(
             RedRenderAudioFmtToFfmegAudioFmt(mObtained.format));
@@ -386,7 +376,7 @@ void CRedRenderAudioHal::GetAudioData(char *data, int &len) {
         int ret_len = soundtouchTranslate(
             mSoundTouchHandle, mAudioNewBuf, static_cast<float>(mPlaybackRate),
             static_cast<float>(1.0f) / mPlaybackRate, resampled_data_size / 2,
-            bytes_per_sample, mObtained.channels, buffer->sample_rate);
+            bytes_per_sample, mObtained.channel_layout.nb_channels, buffer->sample_rate);
         if (ret_len > 0) {
           mAudioBuf = reinterpret_cast<uint8_t *>(mAudioNewBuf);
           resampled_data_size = ret_len;

@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <libavutil/channel_layout.h>
+
 #define BUFFERING_CHECK_PER_MILLISECONDS (500)
 #define FAST_BUFFERING_CHECK_PER_MILLISECONDS (50)
 
@@ -273,8 +275,7 @@ struct TrackInfo {
   /* Audio */
   int sample_rate{0};
   int sample_fmt{0};
-  uint64_t channel_layout{0};
-  int channels{0};
+  AVChannelLayout channel_layout{};
 
   uint8_t *extra_data{nullptr};
   int extra_data_size{0};

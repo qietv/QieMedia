@@ -2,6 +2,8 @@
 
 #include "RedBase.h"
 
+#include <libavutil/channel_layout.h>
+
 REDPLAYER_NS_BEGIN;
 
 class CGlobalBuffer {
@@ -84,9 +86,8 @@ public:
    */
   int nb_samples{0};
   int sample_rate{0}; // Sample rate of the audio data
-  int num_channels{0};
   uint8_t *channel[MAX_PALANARS];
-  uint64_t channel_layout{0}; // Channel layout of the audio data
+  AVChannelLayout channel_layout{}; // Channel layout of the audio data
 };
 
 REDPLAYER_NS_END;

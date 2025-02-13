@@ -8,6 +8,8 @@
 #include "reddecoder/audio/audio_common_definition.h"
 #include "reddecoder/video/video_common_definition.h"
 
+#include <libavutil/channel_layout.h>
+
 namespace reddecoder {
 
 enum class BufferType {
@@ -187,13 +189,12 @@ struct VideoFormatDescMeta {
 
 const int MAX_PALANARS = 8;
 struct AudioFrameMeta {
-  int num_channels;
   int sample_rate;
   int num_samples;
   int64_t pts_ms;
 
   int sample_format;
-  uint64_t channel_layout;
+  AVChannelLayout channel_layout{};
 
   int channel_size;
   uint8_t *channel[MAX_PALANARS];

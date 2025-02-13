@@ -47,7 +47,7 @@ VideoCodecError FFmpegVideoDecoder::init(const Buffer *buffer) {
     codec_context_->codec_id = (AVCodecID)codec_info_.ffmpeg_codec_id;
   }
 
-  AVCodec *codec;
+  const AVCodec *codec;
   AV_LOGI(DEC_TAG, "[reddecoder] %s, use ffmpeg decoder %d\n", __FUNCTION__,
           codec_context_->codec_id);
   codec = avcodec_find_decoder(codec_context_->codec_id);
@@ -231,7 +231,7 @@ FFmpegVideoDecoder::set_video_format_description(const Buffer *buffer) {
               __FUNCTION__, codec_context_->skip_frame,
               codec_context_->skip_loop_filter, codec_context_->skip_idct);
 
-      AVCodec *codec;
+      const AVCodec *codec;
       codec = avcodec_find_decoder(codec_context_->codec_id);
       if (!codec) {
         release();
