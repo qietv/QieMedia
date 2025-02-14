@@ -1,6 +1,8 @@
 ﻿# QieMedia Dependencies for OpenHarmony
 
-Prebuilt binaries for QieMedia dependencies
+Prebuilt binaries for QieMedia dependencies with [vcpkg-ohos-overlay].
+
+[vcpkg-ohos-overlay]: https://github.com/qietv/vcpkg-ohos-overlay
 
 ## Build
 
