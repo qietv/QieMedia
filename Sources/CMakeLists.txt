@@ -1,4 +1,4 @@
-## 
+﻿## 
 ## PROJECT:   QieMedia
 ## FILE:      CMakeLists.txt
 ## PURPOSE:   The root CMake project file
@@ -11,3 +11,5 @@
 cmake_minimum_required (VERSION 3.8)
 
 project ("QieMedia")
+
+add_subdirectory ("QieMedia")
