@@ -1,0 +1,84 @@
+﻿{
+  "configurations": [
+    {
+      "name": "OHOS-x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\Output\\build\\${name}",
+      "installRoot": "${projectDir}\\Output\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${env.ProgramFiles}/Huawei/DevEco Studio/sdk/default/openharmony/native/build/cmake/ohos.toolchain.cmake",
+      "inheritEnvironments": [],
+      "intelliSenseMode": "android-clang-x64",
+      "variables": [
+        {
+          "name": "OHOS_ARCH",
+          "value": "x86_64",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "OHOS-arm64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\Output\\build\\${name}",
+      "installRoot": "${projectDir}\\Output\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${env.ProgramFiles}/Huawei/DevEco Studio/sdk/default/openharmony/native/build/cmake/ohos.toolchain.cmake",
+      "inheritEnvironments": [],
+      "intelliSenseMode": "android-clang-arm64",
+      "variables": [
+        {
+          "name": "OHOS_ARCH",
+          "value": "arm64-v8a",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "OHOS-x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\Output\\build\\${name}",
+      "installRoot": "${projectDir}\\Output\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${env.ProgramFiles}/Huawei/DevEco Studio/sdk/default/openharmony/native/build/cmake/ohos.toolchain.cmake",
+      "inheritEnvironments": [],
+      "intelliSenseMode": "android-clang-x64",
+      "variables": [
+        {
+          "name": "OHOS_ARCH",
+          "value": "x86_64",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "OHOS-arm64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\Output\\build\\${name}",
+      "installRoot": "${projectDir}\\Output\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${env.ProgramFiles}/Huawei/DevEco Studio/sdk/default/openharmony/native/build/cmake/ohos.toolchain.cmake",
+      "inheritEnvironments": [],
+      "intelliSenseMode": "android-clang-arm64",
+      "variables": [
+        {
+          "name": "OHOS_ARCH",
+          "value": "arm64-v8a",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}
