@@ -9,14 +9,16 @@
 ## 
 
 add_library(
-  QieMedia 
+  QieMediaNative 
   SHARED
-  "QieMedia.cpp")
+  "QieMediaNative.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET QieMedia PROPERTY CXX_STANDARD 17)
+  set_property(
+    TARGET QieMediaNative
+    PROPERTY CXX_STANDARD 17)
 endif()
 
 target_link_libraries(
-  QieMedia
+  QieMediaNative
   c)
