@@ -1,7 +1,7 @@
 ﻿/*
  * PROJECT:   QieMedia
  * FILE:      QieMediaNative.h
- * PURPOSE:   Definition for QieMedia native library for OpenHarmony
+ * PURPOSE:   Definition for QieMediaNative library for OpenHarmony
  *
  * LICENSE:   See License.md file in the project root
  *

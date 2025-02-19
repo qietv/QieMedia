@@ -1,7 +1,7 @@
 ﻿/*
  * PROJECT:   QieMedia
  * FILE:      QieMediaNative.cpp
- * PURPOSE:   Implementation for QieMedia native library for OpenHarmony
+ * PURPOSE:   Implementation for QieMediaNative library for OpenHarmony
  *
  * LICENSE:   See License.md file in the project root
  *
