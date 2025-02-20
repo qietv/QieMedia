@@ -42,3 +42,32 @@ extern "C" void QieMediaNativeEmptySymbol()
 // IsMuted { get; set; }
 // Information { get; } // JSON string
 //
+
+#include <napi/native_api.h>
+
+namespace
+{
+    static napi_module g_QieMediaNativeModule =
+    {
+        .nm_version = 1,
+        .nm_flags = 0,
+        .nm_filename = nullptr,
+        .nm_register_func = nullptr, // TODO
+        .nm_modname = "QieMediaNative",
+        .nm_priv = nullptr,
+        .reserved = { nullptr, nullptr, nullptr, nullptr },
+    };
+}
+
+#ifndef EXTERN_C
+#define EXTERN_C extern "C"
+#endif // !EXTERN_C
+
+#ifndef ATTRIBUTE_CONSTRUCTOR
+#define ATTRIBUTE_CONSTRUCTOR __attribute__((constructor))
+#endif // !ATTRIBUTE_CONSTRUCTOR
+
+EXTERN_C ATTRIBUTE_CONSTRUCTOR void QieMediaNativeRegisterModule()
+{
+    ::napi_module_register(&g_QieMediaNativeModule);
+}

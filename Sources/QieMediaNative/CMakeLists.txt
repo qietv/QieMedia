@@ -21,4 +21,5 @@ endif()
 
 target_link_libraries(
   QieMediaNative
-  c)
+  c
+  ace_napi.z)
