@@ -36,23 +36,214 @@ extern "C" void QieMediaNativeEmptySymbol()
 // Position { get; set; }
 // PlaybackRate { get; set; }
 // Volume { get; set; }
-// PlaybackState { get; } enum MediaPlaybackState { None, Opening, Buffering, Playing, Paused, Stopped }
+// PlaybackState { get; } which is QieMedia::Native::MediaPlaybackState
 // IsLooping { get; set; }
 // NaturalDuration { get; } is the actual duration of the media without applying the PlaybackRate
 // IsMuted { get; set; }
 // Information { get; } // JSON string
 //
 
+#include <cstddef>
+
 #include <napi/native_api.h>
 
 namespace
 {
+    static const napi_property_descriptor g_RegisteredProperties[] =
+    {
+        {
+            .utf8name = "CreatePlaybackSession",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "ClosePlaybackSession",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "QueryPlaybackSession",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetFileSource",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetUriSource",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetSurface",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "Load",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "Reset",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "Pause",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "Play",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "Stop",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetPosition",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetPlaybackRate",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetVolume",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetLooping",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "SetMuted",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
+        {
+            .utf8name = "GetInformation",
+            .name = nullptr,
+            .method = nullptr, // TODO
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        }
+    };
+
+    static const std::size_t g_RegisteredPropertiesCount =
+        sizeof(g_RegisteredProperties) / sizeof(*g_RegisteredProperties);
+
+    static napi_value QieMediaNativeModuleRegisterHandler(
+        napi_env env,
+        napi_value exports)
+    {
+        ::napi_define_properties(
+            env,
+            exports,
+            g_RegisteredPropertiesCount,
+            g_RegisteredProperties);
+        return exports;
+    }
+
     static napi_module g_QieMediaNativeModule =
     {
         .nm_version = 1,
         .nm_flags = 0,
         .nm_filename = nullptr,
-        .nm_register_func = nullptr, // TODO
+        .nm_register_func = ::QieMediaNativeModuleRegisterHandler,
         .nm_modname = "QieMediaNative",
         .nm_priv = nullptr,
         .reserved = { nullptr, nullptr, nullptr, nullptr },
