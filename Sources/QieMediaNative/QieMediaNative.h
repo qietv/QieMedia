@@ -43,6 +43,11 @@ namespace QieMedia::Native
         bool IsLooping;
         bool IsMuted;
     };
+
+    struct MediaPlaybackSession
+    {
+        int Dummy;
+    };
 }
 
 #endif // !QIEMEDIA_NATIVE
