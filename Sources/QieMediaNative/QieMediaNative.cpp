@@ -46,10 +46,14 @@ extern "C" void QieMediaNativeEmptySymbol()
 #include <cstddef>
 
 #include <napi/native_api.h>
+#include <hilog/log.h>
 
 #include <map>
 #include <string>
 #include <vector>
+
+#undef LOG_TAG
+#define LOG_TAG "QieMediaNative" // Global tag, which identifies the module log tag.
 
 namespace Mile::NodeInterop
 {
@@ -114,6 +118,49 @@ namespace
     using MediaPlaybackSession = QieMedia::Native::MediaPlaybackSession;
     static std::map<std::string, MediaPlaybackSession> g_PlaybackSessions;
 
+    napi_value Add(
+        napi_env EnvironmentObject,
+        napi_callback_info CallbackInformationObject)
+    {
+        std::vector<napi_value> Arguments;
+        if (napi_ok != Mile::NodeInterop::GetCallbackArguments(
+            EnvironmentObject,
+            CallbackInformationObject,
+            Arguments))
+        {
+            // TODO
+            return nullptr;
+        }
+
+        //napi_valuetype valuetype0;
+        //napi_typeof(EnvironmentObject, Arguments[0], &valuetype0);
+
+        //napi_valuetype valuetype1;
+        //napi_typeof(EnvironmentObject, Arguments[1], &valuetype1);
+
+        double a = 0.0;
+        ::napi_get_value_double(
+            EnvironmentObject,
+            Arguments[0],
+            &a);
+
+        double b = 0.0;
+        ::napi_get_value_double(
+            EnvironmentObject,
+            Arguments[1],
+            &b);
+
+        napi_value Result = nullptr;
+        ::napi_create_double(
+            EnvironmentObject,
+            6.0 * (a + b),
+            &Result);
+
+        OH_LOG_INFO(LOG_APP, "Hello World from QieMediaNative!");
+
+        return Result;
+    }
+
     napi_value CreatePlaybackSession(
         napi_env EnvironmentObject,
         napi_callback_info CallbackInformationObject)
@@ -134,6 +181,16 @@ namespace
 
     static const napi_property_descriptor g_RegisteredProperties[] =
     {
+        {
+            .utf8name = "add",
+            .name = nullptr,
+            .method = ::Add,
+            .getter = nullptr,
+            .setter = nullptr,
+            .value = nullptr,
+            .attributes = napi_default,
+            .data = nullptr,
+        },
         {
             .utf8name = "CreatePlaybackSession",
             .name = nullptr,
